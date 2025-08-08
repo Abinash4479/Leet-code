@@ -1,0 +1,31 @@
+import java.util.*;
+
+class Solution {
+    Map<String, Double> memo = new HashMap<>();
+
+    public double soupServings(int n) {
+        if (n > 5000) return 1.0; // Optimization based on problem analysis
+
+        int N = (int) Math.ceil(n / 25.0); // Scale down n to 25mL units
+        return helper(N, N);
+    }
+
+    private double helper(int a, int b) {
+        if (a <= 0 && b <= 0) return 0.5; // both empty at same time
+        if (a <= 0) return 1.0;           // A empty first
+        if (b <= 0) return 0.0;           // B empty first
+
+        String key = a + "," + b;
+        if (memo.containsKey(key)) return memo.get(key);
+
+        double result = 0.25 * (
+            helper(a - 4, b) +       // 100ml A, 0ml B
+            helper(a - 3, b - 1) +   // 75ml A, 25ml B
+            helper(a - 2, b - 2) +   // 50ml A, 50ml B
+            helper(a - 1, b - 3)     // 25ml A, 75ml B
+        );
+
+        memo.put(key, result);
+        return result;
+    }
+}
