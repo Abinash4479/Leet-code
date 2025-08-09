@@ -1,0 +1,7 @@
+class Solution {
+    public boolean isPowerOfTwo(int n) {
+        // A power of two has exactly one bit set in its binary representation
+        // So, n > 0 and (n & (n - 1)) == 0 means n is a power of two
+        return n > 0 && (n & (n - 1)) == 0;
+    }
+}
