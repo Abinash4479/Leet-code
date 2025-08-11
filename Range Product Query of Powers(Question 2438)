@@ -1,0 +1,42 @@
+class Solution {
+    private static final long MOD = 1_000_000_007L;
+
+    public int[] productQueries(int n, int[][] queries) {
+        // 1) Collect exponents of set bits (ascending)
+        // n <= 1e9 -> bits up to 29
+        int[] exps = new int[32];
+        int m = 0;
+        int bit = 0;
+        int x = n;
+        while (x > 0) {
+            if ((x & 1) == 1) exps[m++] = bit; // 2^bit is in the decomposition
+            bit++;
+            x >>= 1;
+        }
+
+        // 2) Prefix sums of exponents for range-sum -> power of two
+        long[] pref = new long[m + 1];
+        for (int i = 0; i < m; i++) pref[i + 1] = pref[i] + exps[i];
+
+        // 3) Answer queries: product = 2^(sum of exps in [l, r]) mod MOD
+        int q = queries.length;
+        int[] ans = new int[q];
+        for (int i = 0; i < q; i++) {
+            int l = queries[i][0], r = queries[i][1];
+            long sumExp = pref[r + 1] - pref[l];
+            ans[i] = (int) modPow2(sumExp);
+        }
+        return ans;
+    }
+
+    // Compute 2^e mod MOD
+    private long modPow2(long e) {
+        long base = 2L, res = 1L;
+        while (e > 0) {
+            if ((e & 1L) == 1L) res = (res * base) % MOD;
+            base = (base * base) % MOD;
+            e >>= 1;
+        }
+        return res;
+    }
+}
