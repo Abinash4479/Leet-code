@@ -1,0 +1,28 @@
+class Solution {
+    public int totalNQueens(int n) {
+        int full = (1 << n) - 1;           // all n columns set to 1
+        return dfs(0, 0, 0, full);
+    }
+
+    // cols: occupied columns
+    // diag1: occupied main diagonals (r - c), shifted left per next row
+    // diag2: occupied anti-diagonals (r + c), shifted right per next row
+    // full: mask with n low bits set (board width)
+    private int dfs(int cols, int diag1, int diag2, int full) {
+        if (cols == full) return 1;        // placed queens on all rows
+
+        int avail = full & ~(cols | diag1 | diag2);  // safe columns on this row
+        int count = 0;
+        while (avail != 0) {
+            int pick = avail & -avail;               // choose lowest set bit
+            avail -= pick;                           // remove it
+            count += dfs(
+                cols | pick,
+                (diag1 | pick) << 1 & full,         // shift and mask to board width
+                (diag2 | pick) >> 1,                 // shift right; higher bits drop off
+                full
+            );
+        }
+        return count;
+    }
+}
